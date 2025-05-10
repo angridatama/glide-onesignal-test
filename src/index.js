@@ -12,7 +12,7 @@ window.OneSignalDeferred.push(async function (OneSignal) {
     appId: "fcf28885-6e95-4401-8235-e8223ab2e898",
     notifyButton: { enable: false },
     serviceWorkerPath: "/push/OneSignalSDKWorker.js",
-    serviceWorkerParam: { scope: "/push/" },,
+    serviceWorkerParam: { scope: "/push/" },
   });
 
   console.log("✅ OneSignal Initialized");
