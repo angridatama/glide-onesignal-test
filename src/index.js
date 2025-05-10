@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import OneSignal from 'react-onesignal';
 import App from "./App";
 import "./index.css";
 
