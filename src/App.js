@@ -11,17 +11,38 @@ const App = () => {
     const params = new URLSearchParams(window.location.search);
     const userEmail = params.get('email');
     setEmail(userEmail);
-  
-    const checkUserId = async () => {
-      if (window.OneSignal && window.OneSignal.user) {
-        const id = await window.OneSignal.user.getId();
-        setUserId(id);
-      }
+
+    const waitForOneSignal = async () => {
+      if (!window.OneSignalDeferred) return;
+
+      window.OneSignalDeferred.push(async function (OneSignal) {
+        try {
+          // Wait until OneSignal is ready
+          const id = await OneSignal.user.getId();
+          setUserId(id);
+
+          // Also send to Glide if email exists
+          if (userEmail && id) {
+            fetch("https://go.glideapps.com/api/container/plugin/webhook-trigger/nyEQtv7S4N1E2SfxTuax/80a82896-f99a-40e0-a71c-c35eeb5f11a2", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer fda014a4-0721-45b2-a1d8-4691500ae2da",
+              },
+              body: JSON.stringify({ email: userEmail, userId: id }),
+            })
+              .then((res) => res.json())
+              .then((data) => console.log("✅ Sent to Glide:", data))
+              .catch((err) => console.error("❌ Error sending to Glide:", err));
+          }
+        } catch (error) {
+          console.error("❌ Error retrieving user ID:", error);
+        }
+      });
     };
-  
-    checkUserId();
+
+    waitForOneSignal();
   }, []);
-  
 
   return (
     <div className="app-container">
