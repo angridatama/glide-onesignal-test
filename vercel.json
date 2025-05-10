@@ -1,0 +1,9 @@
+{
+    "rewrites": [
+      {
+        "source": "/push/:match*",
+        "destination": "/push/:match*"
+      }
+    ]
+  }
+  
