@@ -12,15 +12,7 @@ window.OneSignalDeferred.push(async function (OneSignal) {
     appId: "fcf28885-6e95-4401-8235-e8223ab2e898",
     notifyButton: { enable: false },
     serviceWorkerPath: "/push/OneSignalSDKWorker.js",
-    serviceWorkerParam: { scope: "/push/" },
-    promptOptions: {
-      slidedown: {
-        enabled: true,
-        actionMessage: "We'd like to show you notifications for the latest updates.",
-        acceptButtonText: "Allow",
-        cancelButtonText: "No thanks"
-      },
-    },
+    serviceWorkerParam: { scope: "/push/" },,
   });
 
   console.log("✅ OneSignal Initialized");
