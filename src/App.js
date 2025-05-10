@@ -1,55 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import './App.css';
-import Lottie from 'lottie-react';
-import animationData from './assets/animation.json';
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import Lottie from "lottie-react";
+import animationData from "./assets/animation.json";
 
 const App = () => {
   const [userId, setUserId] = useState(null);
   const [email, setEmail] = useState(null);
 
   useEffect(() => {
+    // Extract email from URL query parameters
     const params = new URLSearchParams(window.location.search);
-    const userEmail = params.get('email');
+    const userEmail = params.get("email");
     setEmail(userEmail);
-
+    
+    // Wait until OneSignal is initialized (through window.OneSignalDeferred)
     const waitForOneSignal = async () => {
-      if (!window.OneSignalDeferred) return;
-
-      window.OneSignalDeferred.push(async function (OneSignal) {
+      if (!window.OneSignal) return;
+      
+      window.OneSignal.push(async function () {
         try {
-          // Initialize OneSignal and set up event listeners
-          OneSignal.addEventListener('subscriptionChange', async (isSubscribed) => {
-            if (isSubscribed) {
-              try {
-                // Wait until OneSignal is ready and get the User ID
-                const id = await OneSignal.getUserId();
-                setUserId(id);
-                
-                // Send to Glide if email exists and ID is available
-                if (userEmail && id) {
-                  fetch("https://go.glideapps.com/api/container/plugin/webhook-trigger/nyEQtv7S4N1E2SfxTuax/80a82896-f99a-40e0-a71c-c35eeb5f11a2", {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: "Bearer fda014a4-0721-45b2-a1d8-4691500ae2da",
-                    },
-                    body: JSON.stringify({ email: userEmail, userId: id }),
-                  })
-                    .then((res) => res.json())
-                    .then((data) => console.log("✅ Sent to Glide:", data))
-                    .catch((err) => console.error("❌ Error sending to Glide:", err));
-                }
-              } catch (error) {
-                console.error("❌ Error retrieving user ID:", error);
-              }
-            }
-          });
-
-          // Optionally, show the Slidedown prompt automatically when the page loads
-          OneSignal.showSlidedownPrompt();
-          
+          // Get the OneSignal User ID
+          const id = await window.OneSignal.getUserId();
+          setUserId(id);
         } catch (error) {
-          console.error("❌ Error initializing OneSignal:", error);
+          console.error("❌ Error retrieving user ID:", error);
         }
       });
     };

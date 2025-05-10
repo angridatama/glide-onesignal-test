@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
-// Make sure to define the queue before using it
+// Initialize OneSignal and handle events in index.js
 window.OneSignalDeferred = window.OneSignalDeferred || [];
 
 window.OneSignalDeferred.push(async function (OneSignal) {
@@ -47,6 +47,6 @@ window.OneSignalDeferred.push(async function (OneSignal) {
   });
 });
 
-// 🔥 Ensure your app still renders!
+// Ensure your app still renders after initializing OneSignal
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<App />);
