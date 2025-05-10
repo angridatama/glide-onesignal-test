@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import OneSignal from 'react-onesignal';
 import App from "./App";
 import "./index.css";
 
-// Initialize OneSignal using Deferred
+// SAFELY INIT OneSignal Deferred
+window.OneSignalDeferred = window.OneSignalDeferred || [];
 window.OneSignalDeferred.push(async function (OneSignal) {
   await OneSignal.init({
     appId: "fcf28885-6e95-4401-8235-e8223ab2e898",
@@ -15,25 +15,20 @@ window.OneSignalDeferred.push(async function (OneSignal) {
       slidedown: { enabled: true },
     },
   });
-  console.log('OneSignal Initialized');
-  window.OneSignalInitialized = true;
-});
 
+  console.log("✅ OneSignal Initialized");
 
-  // Show permission prompt
+  // Move all OneSignal usage here — ESLint will not complain
   OneSignal.showSlidedownPrompt();
 
-  // Wait for user to subscribe
   OneSignal.on("subscriptionChange", async function (isSubscribed) {
     if (isSubscribed) {
       const userId = await OneSignal.getUserId();
       console.log("✅ User subscribed. OneSignal ID:", userId);
 
-      // Get email from URL
       const params = new URLSearchParams(window.location.search);
       const userEmail = params.get("email");
 
-      // Send to Glide
       if (userEmail && userId) {
         fetch(
           "https://go.glideapps.com/api/container/plugin/webhook-trigger/nyEQtv7S4N1E2SfxTuax/80a82896-f99a-40e0-a71c-c35eeb5f11a2",
@@ -52,8 +47,7 @@ window.OneSignalDeferred.push(async function (OneSignal) {
       }
     }
   });
-
-  window.OneSignalInitialized = true;
+});
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<App />);
