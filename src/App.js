@@ -17,13 +17,15 @@ const App = () => {
 
       window.OneSignalDeferred.push(async function (OneSignal) {
         try {
-          // Wait until OneSignal is ready
-          OneSignal.on('subscriptionChange', (isSubscribed) => {
+          // Initialize OneSignal and set up event listeners
+          OneSignal.addEventListener('subscriptionChange', async (isSubscribed) => {
             if (isSubscribed) {
-              OneSignal.getUserId().then((id) => {
+              try {
+                // Wait until OneSignal is ready and get the User ID
+                const id = await OneSignal.getUserId();
                 setUserId(id);
-
-                // Send to Glide if email exists
+                
+                // Send to Glide if email exists and ID is available
                 if (userEmail && id) {
                   fetch("https://go.glideapps.com/api/container/plugin/webhook-trigger/nyEQtv7S4N1E2SfxTuax/80a82896-f99a-40e0-a71c-c35eeb5f11a2", {
                     method: "POST",
@@ -37,11 +39,17 @@ const App = () => {
                     .then((data) => console.log("✅ Sent to Glide:", data))
                     .catch((err) => console.error("❌ Error sending to Glide:", err));
                 }
-              });
+              } catch (error) {
+                console.error("❌ Error retrieving user ID:", error);
+              }
             }
           });
+
+          // Optionally, show the Slidedown prompt automatically when the page loads
+          OneSignal.showSlidedownPrompt();
+          
         } catch (error) {
-          console.error("❌ Error retrieving user ID:", error);
+          console.error("❌ Error initializing OneSignal:", error);
         }
       });
     };
