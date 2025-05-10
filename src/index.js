@@ -1,35 +1,29 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import "./index.css";
-
-// Ensure the deferred array exists
 window.OneSignalDeferred = window.OneSignalDeferred || [];
-
-// Push your OneSignal init logic
 window.OneSignalDeferred.push(async function (OneSignal) {
   await OneSignal.init({
     appId: "fcf28885-6e95-4401-8235-e8223ab2e898",
-    notifyButton: { enable: false },
     serviceWorkerPath: "/push/OneSignalSDKWorker.js",
     serviceWorkerParam: { scope: "/push/" },
+    promptOptions: {
+      slidedown: { enabled: true },
+    },
   });
 
   console.log("✅ OneSignal Initialized");
 
-  // Show the permission prompt right away
-  OneSignal.showSlidedownPrompt();
+  // Show the prompt immediately after init
+  await OneSignal.showSlidedownPrompt();
 
-  // When subscribed, send data to Glide
-  OneSignal.on("subscriptionChange", async (isSubscribed) => {
+  // Detect subscription
+  OneSignal.on('subscriptionChange', async function (isSubscribed) {
     if (isSubscribed) {
-      const userId = await OneSignal.getUserId();
-      console.log("✅ Subscribed, ID:", userId);
+      const userId = await OneSignal.user.getId();
+      console.log("✅ Subscribed! User ID:", userId);
 
       const params = new URLSearchParams(window.location.search);
       const email = params.get("email");
 
-      if (userId && email) {
+      if (email && userId) {
         fetch("https://go.glideapps.com/api/container/plugin/webhook-trigger/nyEQtv7S4N1E2SfxTuax/80a82896-f99a-40e0-a71c-c35eeb5f11a2", {
           method: "POST",
           headers: {
@@ -45,6 +39,3 @@ window.OneSignalDeferred.push(async function (OneSignal) {
     }
   });
 });
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App />);

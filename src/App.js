@@ -11,15 +11,17 @@ const App = () => {
     const params = new URLSearchParams(window.location.search);
     const userEmail = params.get('email');
     setEmail(userEmail);
-
+  
     const checkUserId = async () => {
-      if (window.OneSignal && window.OneSignal.getUserId) {
-        const id = await window.OneSignal.getUserId();
+      if (window.OneSignal && window.OneSignal.user) {
+        const id = await window.OneSignal.user.getId();
         setUserId(id);
       }
     };
+  
     checkUserId();
   }, []);
+  
 
   return (
     <div className="app-container">
