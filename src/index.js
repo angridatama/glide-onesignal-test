@@ -24,7 +24,7 @@ window.OneSignalDeferred.push(async function (OneSignal) {
   // Handle subscription
   OneSignal.on("subscriptionChange", async function (isSubscribed) {
     if (isSubscribed) {
-      const userId = await OneSignal.user.getId();
+      const userId = await OneSignal.User.onesignalId;;
       console.log("✅ Subscribed! OneSignal User ID:", userId);
 
       const params = new URLSearchParams(window.location.search);
