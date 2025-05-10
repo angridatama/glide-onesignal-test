@@ -18,7 +18,7 @@ const App = () => {
       window.OneSignalDeferred.push(async function (OneSignal) {
         try {
           // Wait until OneSignal is ready
-          const id = await OneSignal.user.getId();
+          const id = await OneSignal.User.getId();
           setUserId(id);
 
           // Also send to Glide if email exists
