@@ -16,6 +16,7 @@ const App = () => {
     const checkUserId = async () => {
       if (window.OneSignal && window.OneSignal.getUserId) {
         const id = await window.OneSignal.getUserId();
+        console.log(id);
         setUserId(id);
       }
     };
