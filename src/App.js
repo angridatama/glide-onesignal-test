@@ -20,7 +20,7 @@ const App = () => {
       window.OneSignal.push(async function () {
         try {
           // Get the OneSignal User ID
-          const id = await window.OneSignal.User.onesignalId;
+          const id = await window.OneSignal.getUserId();
           console.log(id);
           setUserId(id);
         } catch (error) {
