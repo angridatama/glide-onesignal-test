@@ -8,28 +8,18 @@ const App = () => {
   const [email, setEmail] = useState(null);
 
   useEffect(() => {
-    // Extract email from URL query parameters
     const params = new URLSearchParams(window.location.search);
-    const userEmail = params.get("email");
+    const userEmail = params.get('email');
     setEmail(userEmail);
-    
-    // Wait until OneSignal is initialized (through window.OneSignalDeferred)
-    const waitForOneSignal = async () => {
-      if (!window.OneSignal) return;
-      
-      window.OneSignal.push(async function () {
-        try {
-          // Get the OneSignal User ID
-          const id = await window.OneSignal.getUserId();
-          console.log(id);
-          setUserId(id);
-        } catch (error) {
-          console.error("❌ Error retrieving user ID:", error);
-        }
-      });
-    };
 
-    waitForOneSignal();
+    // If the user is already subscribed, get the userId
+    const checkUserId = async () => {
+      if (window.OneSignal && window.OneSignal.getUserId) {
+        const id = await window.OneSignal.getUserId();
+        setUserId(id);
+      }
+    };
+    checkUserId();
   }, []);
 
   return (
