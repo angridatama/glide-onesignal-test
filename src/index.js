@@ -1,11 +1,5 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import "./index.css";
-
-// Initialize OneSignal
+// Already good — OneSignal init + show prompt + send to Glide
 window.OneSignalDeferred = window.OneSignalDeferred || [];
-
 window.OneSignalDeferred.push(async function (OneSignal) {
   await OneSignal.init({
     appId: "fcf28885-6e95-4401-8235-e8223ab2e898",
@@ -16,17 +10,11 @@ window.OneSignalDeferred.push(async function (OneSignal) {
     },
   });
 
-  console.log("✅ OneSignal Initialized");
-
-  // Show the prompt immediately
   await OneSignal.showSlidedownPrompt();
 
-  // Send email + userId to Glide when subscribed
-  OneSignal.on("subscriptionChange", async function (isSubscribed) {
+  OneSignal.on("subscriptionChange", async (isSubscribed) => {
     if (isSubscribed) {
       const userId = await OneSignal.getUserId();
-      console.log("✅ Subscribed! OneSignal User ID:", userId);
-
       const params = new URLSearchParams(window.location.search);
       const email = params.get("email");
 
@@ -46,7 +34,3 @@ window.OneSignalDeferred.push(async function (OneSignal) {
     }
   });
 });
-
-// Render the app
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App />);

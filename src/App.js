@@ -12,36 +12,28 @@ const App = () => {
     const userEmail = params.get("email");
     setEmail(userEmail);
 
-    const initOneSignalListener = async () => {
-      if (!window.OneSignal || !window.OneSignal.push) return;
-
-      window.OneSignal.push(async () => {
-        // Fetch user ID if already available
+    // Wait for OneSignal and subscribe to updates
+    if (window.OneSignalDeferred) {
+      window.OneSignalDeferred.push(async (OneSignal) => {
         try {
-          const id = await window.OneSignal.getUserId();
+          const id = await OneSignal.getUserId();
           if (id) {
+            console.log("✅ OneSignal User ID (initial):", id);
             setUserId(id);
           }
-        } catch (err) {
-          console.error("❌ Error getting initial user ID:", err);
-        }
 
-        // Listen for new subscriptions to update the UI
-        window.OneSignal.on("subscriptionChange", async (isSubscribed) => {
-          if (isSubscribed) {
-            try {
-              const id = await window.OneSignal.getUserId();
-              setUserId(id);
-              console.log("🔄 Updated User ID after subscription:", id);
-            } catch (err) {
-              console.error("❌ Error getting user ID after subscription:", err);
+          OneSignal.on("subscriptionChange", async (isSubscribed) => {
+            if (isSubscribed) {
+              const newId = await OneSignal.getUserId();
+              console.log("🔄 Subscribed, got new ID:", newId);
+              setUserId(newId);
             }
-          }
-        });
+          });
+        } catch (err) {
+          console.error("❌ Error in OneSignal setup:", err);
+        }
       });
-    };
-
-    initOneSignalListener();
+    }
   }, []);
 
   return (
