@@ -8,8 +8,8 @@ window.OneSignalDeferred = window.OneSignalDeferred || [];
 window.OneSignalDeferred.push(async function (OneSignal) {
   await OneSignal.init({
     appId: "fcf28885-6e95-4401-8235-e8223ab2e898",
-    serviceWorkerPath: "/push/OneSignalSDKWorker.js",
-    serviceWorkerParam: { scope: "/push/" },
+    serviceWorkerPath: "/push/onesignal/OneSignalSDKWorker.js",
+    serviceWorkerParam: { scope: "/push/onesignal/" },
     promptOptions: {
       slidedown: { enabled: true },
     },
