@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import Lottie from "lottie-react";
 import animationData from "./assets/animation.json";
@@ -12,28 +12,23 @@ const App = () => {
     const userEmail = params.get("email");
     setEmail(userEmail);
 
-    // Wait for OneSignal and subscribe to updates
-    if (window.OneSignalDeferred) {
-      window.OneSignalDeferred.push(async (OneSignal) => {
-        try {
-          const id = await OneSignal.getUserId();
-          if (id) {
-            console.log("✅ OneSignal User ID (initial):", id);
-            setUserId(id);
-          }
-
-          OneSignal.on("subscriptionChange", async (isSubscribed) => {
-            if (isSubscribed) {
-              const newId = await OneSignal.getUserId();
-              console.log("🔄 Subscribed, got new ID:", newId);
-              setUserId(newId);
-            }
-          });
-        } catch (err) {
-          console.error("❌ Error in OneSignal setup:", err);
+    const getUserId = async () => {
+      try {
+        if (window.OneSignal && typeof window.OneSignal.getUserId === "function") {
+          const id = await window.OneSignal.getUserId();
+          if (id) setUserId(id);
         }
-      });
-    }
+      } catch (err) {
+        console.error("❌ Error getting OneSignal user ID:", err);
+      }
+    };
+
+    // Initial check
+    getUserId();
+
+    // Auto-refresh every 5 seconds
+    const interval = setInterval(getUserId, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
