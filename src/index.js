@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
-// Initialize OneSignal and handle events in index.js
+// Initialize OneSignal
 window.OneSignalDeferred = window.OneSignalDeferred || [];
 
 window.OneSignalDeferred.push(async function (OneSignal) {
@@ -21,10 +21,10 @@ window.OneSignalDeferred.push(async function (OneSignal) {
   // Show the prompt immediately
   await OneSignal.showSlidedownPrompt();
 
-  // Handle subscription
+  // Send email + userId to Glide when subscribed
   OneSignal.on("subscriptionChange", async function (isSubscribed) {
     if (isSubscribed) {
-      const userId = await window.OneSignal.getUserId();
+      const userId = await OneSignal.getUserId();
       console.log("✅ Subscribed! OneSignal User ID:", userId);
 
       const params = new URLSearchParams(window.location.search);
@@ -47,6 +47,6 @@ window.OneSignalDeferred.push(async function (OneSignal) {
   });
 });
 
-// Ensure your app still renders after initializing OneSignal
+// Render the app
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<App />);

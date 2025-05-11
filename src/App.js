@@ -9,18 +9,39 @@ const App = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const userEmail = params.get('email');
+    const userEmail = params.get("email");
     setEmail(userEmail);
 
-    // If the user is already subscribed, get the userId
-    const checkUserId = async () => {
-      if (window.OneSignal && window.OneSignal.getUserId) {
-        const id = await window.OneSignal.getUserId();
-        console.log(id);
-        setUserId(id);
-      }
+    const initOneSignalListener = async () => {
+      if (!window.OneSignal || !window.OneSignal.push) return;
+
+      window.OneSignal.push(async () => {
+        // Fetch user ID if already available
+        try {
+          const id = await window.OneSignal.getUserId();
+          if (id) {
+            setUserId(id);
+          }
+        } catch (err) {
+          console.error("❌ Error getting initial user ID:", err);
+        }
+
+        // Listen for new subscriptions to update the UI
+        window.OneSignal.on("subscriptionChange", async (isSubscribed) => {
+          if (isSubscribed) {
+            try {
+              const id = await window.OneSignal.getUserId();
+              setUserId(id);
+              console.log("🔄 Updated User ID after subscription:", id);
+            } catch (err) {
+              console.error("❌ Error getting user ID after subscription:", err);
+            }
+          }
+        });
+      });
     };
-    checkUserId();
+
+    initOneSignalListener();
   }, []);
 
   return (
