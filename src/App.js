@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import Lottie from "lottie-react";
 import animationData from "./assets/animation.json";
@@ -12,22 +12,22 @@ const App = () => {
     const userEmail = params.get("email");
     setEmail(userEmail);
 
-    const getUserId = async () => {
+    const refreshUserId = async () => {
       try {
-        if (window.OneSignal && typeof window.OneSignal.getUserId === "function") {
-          const id = await window.OneSignal.getUserId();
-          if (id) setUserId(id);
+        if (window.OneSignalDeferred) {
+          window.OneSignalDeferred.push(async function (OneSignal) {
+            const id = await OneSignal.User.getId();
+            setUserId(id);
+          });
         }
-      } catch (err) {
-        console.error("❌ Error getting OneSignal user ID:", err);
+      } catch (error) {
+        console.error("Error getting OneSignal User ID:", error);
       }
     };
 
-    // Initial check
-    getUserId();
+    refreshUserId();
 
-    // Auto-refresh every 5 seconds
-    const interval = setInterval(getUserId, 5000);
+    const interval = setInterval(refreshUserId, 5000); // Refresh every 5s
     return () => clearInterval(interval);
   }, []);
 
